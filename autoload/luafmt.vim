@@ -112,6 +112,12 @@ function! luafmt#format(line1, line2) abort
     return s:system(luafmt, source)
 endfunction
 
+function! luafmt#trim_end_lines() abort
+    let save_cursor = getpos(".")
+    silent! %s#\($\n\s*\)\+\%$##
+    call setpos('.', save_cursor)
+endfunction
+
 function! luafmt#replace(line1, line2, ...) abort
     call s:verify_command()
 
@@ -132,6 +138,15 @@ function! luafmt#replace(line1, line2, ...) abort
     call setline(1, splitted)
     call winrestview(winview)
     call setpos('.', pos_save)
+
+    call luafmt#trim_end_lines()
+    write
+
+    " undo granulation
+    call feedkeys("i\<C-G>u\<Esc>", 'n')
+
+    " dummy operation
+    call feedkeys("io\<Esc>x", 'n')
 endfunction
 
 let &cpo = s:save_cpo
