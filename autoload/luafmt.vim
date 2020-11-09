@@ -120,6 +120,10 @@ endfunction
 
 function! luafmt#replace(line1, line2, ...) abort
     call s:verify_command()
+    
+    write
+    " undo granulation
+    call feedkeys("i\<C-G>u\<Esc>", 'n')
 
     let pos_save = a:0 >= 1 ? a:1 : getpos('.')
     let formatted = luafmt#format(a:line1, a:line2)
@@ -141,12 +145,6 @@ function! luafmt#replace(line1, line2, ...) abort
 
     call luafmt#trim_end_lines()
     write
-
-    " undo granulation
-    call feedkeys("i\<C-G>u\<Esc>", 'n')
-
-    " dummy operation
-    call feedkeys("io\<Esc>x", 'n')
 endfunction
 
 let &cpo = s:save_cpo
